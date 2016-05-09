@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="WINDOWS-1252" ?>
+<!-- $Header: QST_ZUORA_INVOICE_REPORT.xml 1.0 09-JUN-10 VGOPAL $ -->
+<!-- dbdrv: none -->
+<dataTemplate name="QST_ZUORA_INVOICE_REPORT" description="Quest Zuora Invoice Report dataTemplate" Version="1.0">
+ <parameters>
+   <parameter name="P_ZUORA_INVOICE_NUM" dataType="character"/>
+   <parameter name="P_ZUORA_INV_DATE_FROM" dataType="date"/>
+   <parameter name="P_ZUORA_INV_DATE_TO" dataType="date"/>
+   <parameter name="P_REQUEST_ID" dataType="number"/>
+   <parameter name="P_ERRORS_ONLY" dataType="character"/>
+ </parameters>
+ <dataQuery>  
+   <sqlStatement name="INVOICE">
+   <![CDATA[  SELECT 
+		'Invoice:'||      ZUORA_INVOICE_NUM record_key,          
+			   SOURCE_NAME                 
+			,     ORGANIZATION_NAME          
+			,    to_char( ORG_ID ) ORG_ID                   
+			,     ZUORA_SUBSCRIPTION_ID      
+			,     SOLD_TO_ACCT_ID            
+			,     SOLD_TO_CUSTOMER_NAME      
+			,     BILL_TO_CUSTOMER_NAME      
+			,     BILL_TO_ADDR_ID            
+			,     BILL_TO_CONTACT_FIRST_NAME 
+			,     BILL_TO_CONTACT_LAST_NAME  
+			,     BILL_TO_CONTACT_ID         
+			,     SHIP_TO_CUSTOMER_NAME      
+			,     SHIP_TO_ADDR_ID            
+			,     SHIP_TO_CONTACT_FIRST_NAME 
+			,     SHIP_TO_CONTACT_LAST_NAME  
+			,     SHIP_TO_CONTACT_ID         
+			,     CURRENCY_CODE              
+			,     to_char(CONVERSION_RATE)  CONVERSION_RATE          
+			,     CONVERSION_TYPE            
+			,     SALESREP_NAME              
+			,     to_char(SALESREP_ID)     SALESREP_ID           
+			,     to_char(SALESREP_NUMBER)   SALESREP_NUMBER         
+			,     PURCHASE_ORDER             
+			,     TERM_NAME                  
+			,     ZUORA_INVOICE_NUM          
+			,     to_char(INVOICE_DATE, 'mm/dd/yyyy hh24:mi:ss')     INVOICE_DATE          
+			,     INVOICE_TYPE               
+			,     to_char(LINE_NUMBER)        LINE_NUMBER        
+			,     LINE_TYPE                  
+			,     PRODUCT_CODE               
+			,     QUANTITY                   
+			,     UOM_CODE                   
+			,     UNIT_PRICE_AFTER_DISCOUNT  
+			,     INVOICE_LINE_AMT           
+			,     SIEBEL_LINE_TYPE           
+			,     TERM_START_DATE            
+			,     TERM_END_DATE              
+			,     TAX_RATE                   
+			,     TAX_AMOUNT                 
+			,     COMMENTS                   
+			,     CREATION_DATE              
+			,     CREATED_BY                 
+			,     LAST_UPDATED_DATE          
+			,     LAST_UPDATED_BY            
+			,     REQUEST_ID                 
+			,     AR_PROCESS_REQUEST_ID      
+			,     ERROR_MESSAGE              
+			,     STATUS_FLAG                
+			,     ATTRIBUTE1                 
+			,     ORACLE_INVOICE_NUMBER      
+			,     ZUORA_INVOICE_LINE_ID      
+			,     UNIT_SELLING_PRICE         
+			,     RATE_PLAN                  
+			,     SKU_TL                     
+			,     SKU_TS                     
+			,     CHARGE_NAME                
+			,     CHARGE_TYPE                
+			,     SKU                        
+			,     DELIVERY_METHOD            
+			,     SALES_COMP_COMMITMENT_AMT  
+			,     ATTRIBUTE2                 
+			,     ATTRIBUTE3                 
+			,     ATTRIBUTE4                 
+			,     ATTRIBUTE5                 
+			,     ATTRIBUTE6                 
+			,     ATTRIBUTE7                 
+			,     ATTRIBUTE8                 
+			,     ATTRIBUTE9                 
+			,     ATTRIBUTE10                
+			,     ATTRIBUTE11                
+			,     ATTRIBUTE12                
+			,     ATTRIBUTE13                
+			,     ATTRIBUTE14                
+			,     ATTRIBUTE15                
+			,     ATTRIBUTE16                
+			,     ATTRIBUTE17                
+			,     ATTRIBUTE18                
+			,     ATTRIBUTE19                
+			,     ATTRIBUTE20                
+			,     ATTRIBUTEN1                
+			,     ATTRIBUTEN2                
+			,     ATTRIBUTEN3                
+			,     ATTRIBUTEN4                
+			,     ATTRIBUTEN5                
+			,     ATTRIBUTEN6                
+			,     ATTRIBUTEN7                
+			,     ATTRIBUTEN8                
+			,     ATTRIBUTEN9                
+			,     ATTRIBUTEN10               
+			,     ATTRIBUTED1                
+			,     ATTRIBUTED2                
+			,     ATTRIBUTED3                
+			,     ATTRIBUTED4                
+			,     ATTRIBUTED5                
+			,     ATTRIBUTED6                
+			,     ATTRIBUTED7                
+			,     ATTRIBUTED8                
+			,     ATTRIBUTED9                
+			,     ATTRIBUTED10     
+			, request_id req_id1, zuora_invoice_num inv_num, 1 seq_num  
+			FROM QST_ZUORA_INVOICE WHERE 1=1 
+			AND REQUEST_ID = NVL(:P_REQUEST_ID, REQUEST_ID)
+			AND  INVOICE_DATE BETWEEN NVL(:P_ZUORA_INV_DATE_FROM,INVOICE_DATE-1)  AND NVL(:P_ZUORA_INV_DATE_TO,INVOICE_DATE+1)
+			AND ZUORA_INVOICE_NUM = NVL(:P_ZUORA_INVOICE_NUM, ZUORA_INVOICE_NUM)
+			AND (:P_ERRORS_ONLY = 'N' OR (:P_ERRORS_ONLY  = 'Y' AND STATUS_FLAG IN ('X','E')))
+		  UNION ALL
+		   SELECT
+		   '    SalesCredits:'||      ZUORA_INVOICE_NUM,
+			ZQUOTE_RECORD_ID      
+		      ,    ZUORA_INVOICE_NUM     
+		      ,    ZUORA_SUBSCRIPTION_ID 
+		      ,    to_char(SALESREP_ID)           
+		      ,    SALESREP_NUMBER       
+		      ,    SALES_CREDIT_TYPE     
+		      ,    to_char(SALES_CREDIT_TYPE_ID)  
+		      ,    to_char(PERCENT)               
+		      ,    to_char(CREATION_DATE, 'mm/dd/yyyy hh24:mi:ss')         
+		      ,    to_char(CREATED_BY)            
+		      ,    to_char(LAST_UPDATED_DATE, 'mm/dd/yyyy hh24:mi:ss')     
+		      ,    to_char(LAST_UPDATED_BY)       
+		      ,    to_char(REQUEST_ID)            
+		      ,    ERROR_MESSAGE         
+		      ,    STATUS_FLAG           
+		      ,    ATTRIBUTE1            
+		      ,    ATTRIBUTE2            
+		      ,    ATTRIBUTE3            
+		      ,    ATTRIBUTE4            
+		      ,    ATTRIBUTE5            
+		      ,    ATTRIBUTE6            
+		      ,    ATTRIBUTE7            
+		      ,    ATTRIBUTE8            
+		      ,    ATTRIBUTE9            
+		      ,    ATTRIBUTE10           
+		      ,    ATTRIBUTE11           
+		      ,    ATTRIBUTE12           
+		      ,    ATTRIBUTE13           
+		      ,    ATTRIBUTE14           
+		      ,    ATTRIBUTE15           
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+		,null
+			, request_id, zuora_invoice_num, 2  
+			FROM QST_ZUORA_SALES_CREDITS WHERE 1=1 
+			AND (REQUEST_ID , ZUORA_INVOICE_NUM ) in
+		       (select distinct request_id,zuora_invoice_num         FROM QST_ZUORA_INVOICE WHERE 1=1 
+			AND REQUEST_ID = NVL(:P_REQUEST_ID, REQUEST_ID)
+			AND  INVOICE_DATE BETWEEN NVL(:P_ZUORA_INV_DATE_FROM,INVOICE_DATE-1)  AND NVL(:P_ZUORA_INV_DATE_TO,INVOICE_DATE+1)
+			AND ZUORA_INVOICE_NUM = NVL(:P_ZUORA_INVOICE_NUM, ZUORA_INVOICE_NUM)
+			AND (:P_ERRORS_ONLY = 'N' OR (:P_ERRORS_ONLY  = 'Y' AND STATUS_FLAG IN ('X','E'))))
+			ORDER BY  101, 102,103
+  ]]>
+  </sqlStatement>
+ </dataQuery>
+ <dataStructure>
+   <group name="G_INVOICE" source="INVOICE">
+		<element name="RECORD_KEY" value="RECORD_KEY"/>
+		<element name="SOURCE_NAME" value="SOURCE_NAME"/>
+		<element name="ORGANIZATION_NAME" value="ORGANIZATION_NAME"/>
+		<element name="ORG_ID" value="ORG_ID"/>
+		<element name="ZUORA_SUBSCRIPTION_ID" value="ZUORA_SUBSCRIPTION_ID"/>
+		<element name="SOLD_TO_ACCT_ID" value="SOLD_TO_ACCT_ID"/>
+		<element name="SOLD_TO_CUSTOMER_NAME" value="SOLD_TO_CUSTOMER_NAME"/>
+		<element name="BILL_TO_CUSTOMER_NAME" value="BILL_TO_CUSTOMER_NAME"/>
+		<element name="BILL_TO_ADDR_ID" value="BILL_TO_ADDR_ID"/>
+		<element name="BILL_TO_CONTACT_FIRST_NAME" value="BILL_TO_CONTACT_FIRST_NAME"/>
+		<element name="BILL_TO_CONTACT_LAST_NAME" value="BILL_TO_CONTACT_LAST_NAME"/>
+		<element name="BILL_TO_CONTACT_ID" value="BILL_TO_CONTACT_ID"/>
+		<element name="SHIP_TO_CUSTOMER_NAME" value="SHIP_TO_CUSTOMER_NAME"/>
+		<element name="SHIP_TO_ADDR_ID" value="SHIP_TO_ADDR_ID"/>
+		<element name="SHIP_TO_CONTACT_FIRST_NAME" value="SHIP_TO_CONTACT_FIRST_NAME"/>
+		<element name="SHIP_TO_CONTACT_LAST_NAME" value="SHIP_TO_CONTACT_LAST_NAME"/>
+		<element name="SHIP_TO_CONTACT_ID" value="SHIP_TO_CONTACT_ID"/>
+		<element name="CURRENCY_CODE" value="CURRENCY_CODE"/>
+		<element name="CONVERSION_RATE" value="CONVERSION_RATE"/>
+		<element name="CONVERSION_TYPE" value="CONVERSION_TYPE"/>
+		<element name="SALESREP_NAME" value="SALESREP_NAME"/>
+		<element name="SALESREP_ID" value="SALESREP_ID"/>
+		<element name="SALESREP_NUMBER" value="SALESREP_NUMBER"/>
+		<element name="PURCHASE_ORDER" value="PURCHASE_ORDER"/>
+		<element name="TERM_NAME" value="TERM_NAME"/>
+		<element name="ZUORA_INVOICE_NUM" value="ZUORA_INVOICE_NUM"/>
+		<element name="INVOICE_DATE" value="INVOICE_DATE"/>
+		<element name="INVOICE_TYPE" value="INVOICE_TYPE"/>
+		<element name="LINE_NUMBER" value="LINE_NUMBER"/>
+		<element name="LINE_TYPE" value="LINE_TYPE"/>
+		<element name="PRODUCT_CODE" value="PRODUCT_CODE"/>
+		<element name="QUANTITY" value="QUANTITY"/>
+		<element name="UOM_CODE" value="UOM_CODE"/>
+		<element name="UNIT_PRICE_AFTER_DISCOUNT" value="UNIT_PRICE_AFTER_DISCOUNT"/>
+		<element name="INVOICE_LINE_AMT" value="INVOICE_LINE_AMT"/>
+		<element name="SIEBEL_LINE_TYPE" value="SIEBEL_LINE_TYPE"/>
+		<element name="TERM_START_DATE" value="TERM_START_DATE"/>
+		<element name="TERM_END_DATE" value="TERM_END_DATE"/>
+		<element name="TAX_RATE" value="TAX_RATE"/>
+		<element name="TAX_AMOUNT" value="TAX_AMOUNT"/>
+		<element name="COMMENTS" value="COMMENTS"/>
+		<element name="CREATION_DATE" value="CREATION_DATE"/>
+		<element name="CREATED_BY" value="CREATED_BY"/>
+		<element name="LAST_UPDATED_DATE" value="LAST_UPDATED_DATE"/>
+		<element name="LAST_UPDATED_BY" value="LAST_UPDATED_BY"/>
+		<element name="REQUEST_ID" value="REQUEST_ID"/>
+		<element name="AR_PROCESS_REQUEST_ID" value="AR_PROCESS_REQUEST_ID"/>
+		<element name="ERROR_MESSAGE" value="ERROR_MESSAGE"/>
+		<element name="STATUS_FLAG" value="STATUS_FLAG"/>
+		<element name="ATTRIBUTE1" value="ATTRIBUTE1"/>
+		<element name="ORACLE_INVOICE_NUMBER" value="ORACLE_INVOICE_NUMBER"/>
+		<element name="ZUORA_INVOICE_LINE_ID" value="ZUORA_INVOICE_LINE_ID"/>
+		<element name="UNIT_SELLING_PRICE" value="UNIT_SELLING_PRICE"/>
+		<element name="RATE_PLAN" value="RATE_PLAN"/>
+		<element name="SKU_TL" value="SKU_TL"/>
+		<element name="SKU_TS" value="SKU_TS"/>
+		<element name="CHARGE_NAME" value="CHARGE_NAME"/>
+		<element name="CHARGE_TYPE" value="CHARGE_TYPE"/>
+		<element name="SKU" value="SKU"/>
+		<element name="DELIVERY_METHOD" value="DELIVERY_METHOD"/>
+		<element name="SALES_COMP_COMMITMENT_AMT" value="SALES_COMP_COMMITMENT_AMT"/>
+		<element name="ATTRIBUTE2" value="ATTRIBUTE2"/>
+		<element name="ATTRIBUTE3" value="ATTRIBUTE3"/>
+		<element name="ATTRIBUTE4" value="ATTRIBUTE4"/>
+		<element name="ATTRIBUTE5" value="ATTRIBUTE5"/>
+		<element name="ATTRIBUTE6" value="ATTRIBUTE6"/>
+		<element name="ATTRIBUTE7" value="ATTRIBUTE7"/>
+		<element name="ATTRIBUTE8" value="ATTRIBUTE8"/>
+		<element name="ATTRIBUTE9" value="ATTRIBUTE9"/>
+		<element name="ATTRIBUTE10" value="ATTRIBUTE10"/>
+		<element name="ATTRIBUTE11" value="ATTRIBUTE11"/>
+		<element name="ATTRIBUTE12" value="ATTRIBUTE12"/>
+		<element name="ATTRIBUTE13" value="ATTRIBUTE13"/>
+		<element name="ATTRIBUTE14" value="ATTRIBUTE14"/>
+		<element name="ATTRIBUTE15" value="ATTRIBUTE15"/>
+		<element name="ATTRIBUTE16" value="ATTRIBUTE16"/>
+		<element name="ATTRIBUTE17" value="ATTRIBUTE17"/>
+		<element name="ATTRIBUTE18" value="ATTRIBUTE18"/>
+		<element name="ATTRIBUTE19" value="ATTRIBUTE19"/>
+		<element name="ATTRIBUTE20" value="ATTRIBUTE20"/>
+		<element name="ATTRIBUTEN1" value="ATTRIBUTEN1"/>
+		<element name="ATTRIBUTEN2" value="ATTRIBUTEN2"/>
+		<element name="ATTRIBUTEN3" value="ATTRIBUTEN3"/>
+		<element name="ATTRIBUTEN4" value="ATTRIBUTEN4"/>
+		<element name="ATTRIBUTEN5" value="ATTRIBUTEN5"/>
+		<element name="ATTRIBUTEN6" value="ATTRIBUTEN6"/>
+		<element name="ATTRIBUTEN7" value="ATTRIBUTEN7"/>
+		<element name="ATTRIBUTEN8" value="ATTRIBUTEN8"/>
+		<element name="ATTRIBUTEN9" value="ATTRIBUTEN9"/>
+		<element name="ATTRIBUTEN10" value="ATTRIBUTEN10"/>
+		<element name="ATTRIBUTED1" value="ATTRIBUTED1"/>
+		<element name="ATTRIBUTED2" value="ATTRIBUTED2"/>
+		<element name="ATTRIBUTED3" value="ATTRIBUTED3"/>
+		<element name="ATTRIBUTED4" value="ATTRIBUTED4"/>
+		<element name="ATTRIBUTED5" value="ATTRIBUTED5"/>
+		<element name="ATTRIBUTED6" value="ATTRIBUTED6"/>
+		<element name="ATTRIBUTED7" value="ATTRIBUTED7"/>
+		<element name="ATTRIBUTED8" value="ATTRIBUTED8"/>
+		<element name="ATTRIBUTED9" value="ATTRIBUTED9"/>
+		<element name="ATTRIBUTED10" value="ATTRIBUTED10"/>
+  </group>
+  <group name="G_SALES_CREDIT" source="SALES_CREDIT">
+		<element name="ZQUOTE_RECORD_ID" value="ZQUOTE_RECORD_ID"/>
+		<element name="ZUORA_INVOICE_NUM" value="ZUORA_INVOICE_NUM"/>
+		<element name="ZUORA_SUBSCRIPTION_ID" value="ZUORA_SUBSCRIPTION_ID"/>
+		<element name="SALESREP_ID" value="SALESREP_ID"/>
+		<element name="SALESREP_NUMBER" value="SALESREP_NUMBER"/>
+		<element name="SALES_CREDIT_TYPE" value="SALES_CREDIT_TYPE"/>
+		<element name="SALES_CREDIT_TYPE_ID" value="SALES_CREDIT_TYPE_ID"/>
+		<element name="PERCENT" value="PERCENT"/>
+		<element name="CREATION_DATE" value="CREATION_DATE"/>
+		<element name="CREATED_BY" value="CREATED_BY"/>
+		<element name="LAST_UPDATED_DATE" value="LAST_UPDATED_DATE"/>
+		<element name="LAST_UPDATED_BY" value="LAST_UPDATED_BY"/>
+		<element name="REQUEST_ID" value="REQUEST_ID"/>
+		<element name="ERROR_MESSAGE" value="ERROR_MESSAGE"/>
+		<element name="STATUS_FLAG" value="STATUS_FLAG"/>
+		<element name="ATTRIBUTE1" value="ATTRIBUTE1"/>
+		<element name="ATTRIBUTE2" value="ATTRIBUTE2"/>
+		<element name="ATTRIBUTE3" value="ATTRIBUTE3"/>
+		<element name="ATTRIBUTE4" value="ATTRIBUTE4"/>
+		<element name="ATTRIBUTE5" value="ATTRIBUTE5"/>
+		<element name="ATTRIBUTE6" value="ATTRIBUTE6"/>
+		<element name="ATTRIBUTE7" value="ATTRIBUTE7"/>
+		<element name="ATTRIBUTE8" value="ATTRIBUTE8"/>
+		<element name="ATTRIBUTE9" value="ATTRIBUTE9"/>
+		<element name="ATTRIBUTE10" value="ATTRIBUTE10"/>
+		<element name="ATTRIBUTE11" value="ATTRIBUTE11"/>
+		<element name="ATTRIBUTE12" value="ATTRIBUTE12"/>
+		<element name="ATTRIBUTE13" value="ATTRIBUTE13"/>
+		<element name="ATTRIBUTE14" value="ATTRIBUTE14"/>
+		<element name="ATTRIBUTE15" value="ATTRIBUTE15"/>
+  </group>
+ </dataStructure>
+</dataTemplate>

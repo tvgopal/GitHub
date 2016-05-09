@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="WINDOWS-1252" ?>
+<!-- $Header: QST_ZUORA_BOOKINGS_REPORT.xml 1.0 12-FEB-15 VGOPAL $ -->
+<!-- dbdrv: none -->
+<dataTemplate name="QST_ZUORA_BOOKINGS_REPORT" description="Quest Zuora Invoice Report dataTemplate" Version="1.0">
+ <parameters>
+   <parameter name="P_ZUORA_INVOICE_NUM" dataType="character"/>
+   <parameter name="P_ORACLE_INVOICE_NUM" dataType="character"/>
+   <parameter name="P_ZUORA_INV_DATE_FROM" dataType="date"/>
+   <parameter name="P_ZUORA_INV_DATE_TO" dataType="date"/>
+   <parameter name="P_SKU" dataType="number"/>
+ </parameters>
+ <dataQuery>  
+   <sqlStatement name="INVOICE">
+   <![CDATA[          SELECT distinct rct.trx_number invoice_number,hca.cust_account_id ,
+       qzi.zuora_invoice_num,
+       rct.trx_date,
+       hp.party_name customer_name,
+       hca.account_number customer_number,
+       hl.address1,
+       hl.city,
+       hl.state,
+       hl.country,
+       hl.postal_code,
+       hl_ship.address1 ship_address,
+       hl_ship.city ship_city,
+       hl_ship.state ship_state,
+       hl_ship.country ship_country,
+       hl_ship.postal_code ship_postal_code,
+       jrs.name salesrep_name,
+       ccl.salesrep_number,
+       qzi.sku sku,
+       qzi.charge_name description,
+       ccl.quantity,
+       ccl.uom_code,
+       ccl.transaction_amount,
+       ccl.processed_date,
+       qzi.sales_comp_commitment_amt,
+       qzi.term_start_date,
+       qzi.term_end_date
+  FROM apps.CN_COMM_LINES_API_ALL ccl,
+       apps.hz_cust_accounts hca,
+       apps.hz_parties hp,
+       apps.JTF_RS_SALESREPS jrs,
+       apps.ra_customer_trx_all rct,
+       (SELECT DISTINCT zuora_invoice_num,
+                        sales_comp_commitment_amt,
+                        term_start_date,
+                        term_end_date, sku, charge_name, attribute14 type
+          FROM apps.qst_zuora_invoice) qzi,
+       apps.hz_party_sites hps,
+       apps.HZ_cust_acct_sites_all hcas,
+       apps.hz_cust_site_uses_all hcsu,
+       apps.hz_locations hl,
+       apps.hz_party_sites hps_ship,
+       apps.HZ_cust_acct_sites_all hcas_ship,
+       apps.hz_cust_site_uses_all hcsu_ship,
+       apps.hz_locations hl_ship, apps.ra_customer_trx_lines_all rctl, apps.RA_CUST_TRX_LINE_SALESREPS_ALL rctls
+ WHERE    rct.trx_number = ccl.invoice_number(+)
+       AND rct.org_id = ccl.org_id(+)
+       AND qzi.zuora_invoice_num = 'INV' || rct.interface_header_attribute1
+       AND qzi.zuora_invoice_num = decode(nvl(qzi.type,'Invoice') , 'Invoice','INV' || rct.interface_header_attribute1,rct.interface_header_attribute1)
+       AND rct.interface_header_context = 'Zuora'
+       AND rct.bill_to_site_use_id = hcsu.site_use_id
+       AND hcsu.site_use_code = 'BILL_TO'
+       AND hp.party_id = hca.party_id
+       AND hp.party_id = hps.party_id
+       AND hcas.party_site_id = hps.party_site_id
+       AND hcas.cust_account_id = hca.cust_account_id
+       AND hcsu.cust_acct_site_id = hcas.cust_acct_site_id
+       AND hcas.org_id = rct.org_id
+       AND hl.location_id = hps.location_id
+       AND hca.cust_account_id = rct.bill_to_customer_id
+       AND jrs.salesrep_id = rctls.salesrep_id
+       AND jrs.org_id = rct.org_id
+       AND rct.ship_to_site_use_id = hcsu_ship.site_use_id
+       AND hcsu_ship.site_use_code = 'SHIP_TO'
+       AND hcas_ship.party_site_id = hps_ship.party_site_id
+       AND hcsu_ship.cust_acct_site_id = hcas_ship.cust_acct_site_id
+       AND hcas_ship.org_id = rct.org_id
+       AND hl_ship.location_id = hps_ship.location_id
+       and rct.customer_trx_id = rctl.customer_trx_id 
+       and rctl.customer_trx_line_id = rctls.customer_trx_line_id
+       AND qzi.ZUORA_INVOICE_NUM IN nvl(:P_ZUORA_INVOICE_NUM ,qzi.ZUORA_INVOICE_NUM)
+       AND rct.trx_number IN nvl(:P_ORACLE_INVOICE_NUM ,rct.trx_number)
+       AND rct.trx_date BETWEEN NVL(:P_ZUORA_INV_DATE_FROM, rct.trx_date - 1) AND  NVL(:P_ZUORA_INV_DATE_TO, rct.trx_date + 1)    
+       AND qzi.sku = NVL(:P_SKU, qzi.sku )       
+       ORDER BY 1
+  ]]>
+  </sqlStatement>
+ </dataQuery>
+ <dataStructure>
+   <group name="G_INVOICE" source="INVOICE">
+		<element name="INVOICE_NUMBER" value="INVOICE_NUMBER"/>
+		<element name="ZUORA_INVOICE_NUM" value="ZUORA_INVOICE_NUM"/>
+		<element name="INVOICE_DATE" value="INVOICE_DATE"/>
+		<element name="CUSTOMER_NAME" value="CUSTOMER_NAME"/>
+		<element name="CUSTOMER_NUMBER" value="CUSTOMER_NUMBER"/>
+		<element name="ADDRESS1" value="ADDRESS1"/>
+		<element name="CITY" value="CITY"/>
+		<element name="STATE" value="STATE"/>
+		<element name="COUNTRY" value="COUNTRY"/>
+		<element name="POSTAL_CODE" value="POSTAL_CODE"/>
+		<element name="SHIP_ADDRESS" value="SHIP_ADDRESS"/>
+		<element name="SHIP_CITY" value="SHIP_CITY"/>
+		<element name="SHIP_STATE" value="SHIP_STATE"/>
+		<element name="SHIP_COUNTRY" value="SHIP_COUNTRY"/>
+		<element name="SHIP_POSTAL_CODE" value="SHIP_POSTAL_CODE"/>
+		<element name="SALESREP_NAME" value="SALESREP_NAME"/>
+		<element name="SALESREP_NUMBER" value="SALESREP_NUMBER"/>
+		<element name="SKU" value="SKU"/>
+		<element name="DESCRIPTION" value="DESCRIPTION"/>
+		<element name="QUANTITY" value="QUANTITY"/>
+		<element name="UOM_CODE" value="UOM_CODE"/>
+		<element name="TRANSACTION_AMOUNT" value="TRANSACTION_AMOUNT"/>
+		<element name="PROCESSED_DATE" value="PROCESSED_DATE"/>
+		<element name="SALES_COMP_COMMITMENT_AMT" value="SALES_COMP_COMMITMENT_AMT"/>
+		<element name="TERM_START_DATE" value="TERM_START_DATE"/>
+		<element name="TERM_END_DATE" value="TERM_END_DATE"/>
+  </group>
+ </dataStructure>
+</dataTemplate>

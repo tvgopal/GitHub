@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="WINDOWS-1252" ?>
+<!-- $Header: QST_ZUORA_PAYMENT_REPORT.xml 1.0 09-JUN-10 VGOPAL $ -->
+<!-- dbdrv: none -->
+<dataTemplate name="QST_ZUORA_PAYMENT_REPORT" description="Quest Zuora Invoice Report dataTemplate" Version="1.0">
+ <parameters>
+   <parameter name="P_ORACLE_RECEIPT_NUM" dataType="character"/>
+   <parameter name="P_ORACLE_ADJ_NUM" dataType="character"/>
+   <parameter name="P_DATE_FROM" dataType="date"/>
+   <parameter name="P_DATE_TO" dataType="date"/>
+   <parameter name="P_REQUEST_ID" dataType="number"/>
+   <parameter name="P_ERRORS_ONLY" dataType="character"/>
+ </parameters>
+ <dataQuery>  
+   <sqlStatement name="DATA">
+   <![CDATA[  SELECT RECORD_ID,
+		       STATUS_FLAG,
+		       ERROR_MESSAGE,
+		       REQUEST_ID,
+		       CUST_ACCOUNT_ID,
+		       CUSTOMER_NAME,
+		       ACCOUNT_NUMBER,
+		       AMOUNT,
+		       APPLIED_INV_AMOUNT,
+		       RECEIPT_DATE,
+		       INVOICE_NUMBER,
+		       RECEIPT_NUMBER,
+		       CREATION_DATE,
+		       CREATED_BY,
+		       LAST_UPDATED_DATE,
+		       LAST_UPDATED_BY,
+		       Z_INVOICE_NUM,
+		       Z_PAYMENT_METHOD_ID,
+		       Z_ACCOUNT_ID,
+		       STATUS,
+		       TYPE,
+		       REFERENCE_ID,
+		       CASH_RECEIPT_ID,
+		       CUSTOMER_TRX_ID,
+		       ORG_ID,
+		       Z_PAYMENT_NUM,
+		       ATTRIBUTE1,
+		       ATTRIBUTE2,
+		       ATTRIBUTE3,
+		       ATTRIBUTE4,
+		       ATTRIBUTE5,
+		       ATTRIBUTE6,
+		       ATTRIBUTE7,
+		       ATTRIBUTE8,
+		       ATTRIBUTE9,
+		       ATTRIBUTE10,
+		       ATTRIBUTE11,
+		       ATTRIBUTE12,
+		       ATTRIBUTE13,
+		       ATTRIBUTE14,
+		       ATTRIBUTE15,
+		       ATTRIBUTE16,
+		       ATTRIBUTE17,
+		       ATTRIBUTE18,
+		       ATTRIBUTE19,
+		       ATTRIBUTE20,
+		       ATTRIBUTE21,
+		       ATTRIBUTE22,
+		       ATTRIBUTE23,
+		       ATTRIBUTE24,
+		       ATTRIBUTE25,
+		       ATTRIBUTE26,
+		       ATTRIBUTE27,
+		       ATTRIBUTE28,
+		       ATTRIBUTE29,
+		       ATTRIBUTE30
+		  FROM apps.qst_zuora_payments_stg p
+		 WHERE receipt_number = NVL (:P_ORACLE_RECEIPT_NUM, receipt_number)
+		       AND receipt_date BETWEEN NVL (:P_DATE_FROM, receipt_date - 1)
+					    AND NVL (:P_DATE_TO, receipt_date + 1)
+		       AND request_id = NVL (:P_REQUEST_ID, request_id)
+		       AND status_flag =
+			      DECODE (:P_ERRORS_ONLY,
+				      'N', status_flag,
+				      NULL, status_flag,
+				      'Y', 'E')
+  ]]>
+  </sqlStatement>
+ </dataQuery>
+ <dataStructure>
+   <group name="G_DATA" source="DATA">
+		<element name="RECORD_ID" value="RECORD_ID"/>
+		<element name="STATUS_FLAG" value="STATUS_FLAG"/>
+		<element name="ERROR_MESSAGE" value="ERROR_MESSAGE"/>
+		<element name="REQUEST_ID" value="REQUEST_ID"/>
+		<element name="CUST_ACCOUNT_ID" value="CUST_ACCOUNT_ID"/>
+		<element name="CUSTOMER_NAME" value="CUSTOMER_NAME"/>
+		<element name="ACCOUNT_NUMBER" value="ACCOUNT_NUMBER"/>
+		<element name="AMOUNT" value="AMOUNT"/>
+		<element name="APPLIED_INV_AMOUNT" value="APPLIED_INV_AMOUNT"/>
+		<element name="RECEIPT_DATE" value="RECEIPT_DATE"/>
+		<element name="INVOICE_NUMBER" value="INVOICE_NUMBER"/>
+		<element name="RECEIPT_NUMBER" value="RECEIPT_NUMBER"/>
+		<element name="CREATION_DATE" value="CREATION_DATE"/>
+		<element name="CREATED_BY" value="CREATED_BY"/>
+		<element name="LAST_UPDATED_DATE" value="LAST_UPDATED_DATE"/>
+		<element name="LAST_UPDATED_BY" value="LAST_UPDATED_BY"/>
+		<element name="Z_INVOICE_NUM" value="Z_INVOICE_NUM"/>
+		<element name="Z_PAYMENT_METHOD_ID" value="Z_PAYMENT_METHOD_ID"/>
+		<element name="Z_ACCOUNT_ID" value="Z_ACCOUNT_ID"/>
+		<element name="STATUS" value="STATUS"/>
+		<element name="TYPE" value="TYPE"/>
+		<element name="REFERENCE_ID" value="REFERENCE_ID"/>
+		<element name="CASH_RECEIPT_ID" value="CASH_RECEIPT_ID"/>
+		<element name="CUSTOMER_TRX_ID" value="CUSTOMER_TRX_ID"/>
+		<element name="ORG_ID" value="ORG_ID"/>
+		<element name="Z_PAYMENT_NUM" value="Z_PAYMENT_NUM"/>
+		<element name="ATTRIBUTE1" value="ATTRIBUTE1"/>
+		<element name="ATTRIBUTE2" value="ATTRIBUTE2"/>
+		<element name="ATTRIBUTE3" value="ATTRIBUTE3"/>
+		<element name="ATTRIBUTE4" value="ATTRIBUTE4"/>
+		<element name="ATTRIBUTE5" value="ATTRIBUTE5"/>
+		<element name="ATTRIBUTE6" value="ATTRIBUTE6"/>
+		<element name="ATTRIBUTE7" value="ATTRIBUTE7"/>
+		<element name="ATTRIBUTE8" value="ATTRIBUTE8"/>
+		<element name="ATTRIBUTE9" value="ATTRIBUTE9"/>
+		<element name="ATTRIBUTE10" value="ATTRIBUTE10"/>
+		<element name="ATTRIBUTE11" value="ATTRIBUTE11"/>
+		<element name="ATTRIBUTE12" value="ATTRIBUTE12"/>
+		<element name="ATTRIBUTE13" value="ATTRIBUTE13"/>
+		<element name="ATTRIBUTE14" value="ATTRIBUTE14"/>
+		<element name="ATTRIBUTE15" value="ATTRIBUTE15"/>
+		<element name="ATTRIBUTE16" value="ATTRIBUTE16"/>
+		<element name="ATTRIBUTE17" value="ATTRIBUTE17"/>
+		<element name="ATTRIBUTE18" value="ATTRIBUTE18"/>
+		<element name="ATTRIBUTE19" value="ATTRIBUTE19"/>
+		<element name="ATTRIBUTE20" value="ATTRIBUTE20"/>
+		<element name="ATTRIBUTE21" value="ATTRIBUTE21"/>
+		<element name="ATTRIBUTE22" value="ATTRIBUTE22"/>
+		<element name="ATTRIBUTE23" value="ATTRIBUTE23"/>
+		<element name="ATTRIBUTE24" value="ATTRIBUTE24"/>
+		<element name="ATTRIBUTE25" value="ATTRIBUTE25"/>
+		<element name="ATTRIBUTE26" value="ATTRIBUTE26"/>
+		<element name="ATTRIBUTE27" value="ATTRIBUTE27"/>
+		<element name="ATTRIBUTE28" value="ATTRIBUTE28"/>
+		<element name="ATTRIBUTE29" value="ATTRIBUTE29"/>
+		<element name="ATTRIBUTE30" value="ATTRIBUTE30"/>
+  </group>
+ </dataStructure>
+</dataTemplate>
